@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="nb">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Bokstavhopp</title>
+  </head>
+  <body>
+    <canvas id="scene"></canvas>
+
+    <!-- Start menu (for the adult) -->
+    <div id="menu" class="overlay">
+      <div class="card">
+        <h1 id="title" aria-label="Bokstavhopp"></h1>
+        <p class="subtitle">Trykk på tastene – se store og små bokstaver hoppe!</p>
+
+        <div class="modes">
+          <button class="mode-btn" data-mode="free" disabled>
+            <span class="emoji">🎈</span>
+            <span class="label">Fri lek</span>
+            <span class="hint">Trykk på hva du vil</span>
+          </button>
+          <button class="mode-btn" data-mode="practice" disabled>
+            <span class="emoji">🎯</span>
+            <span class="label">Øving</span>
+            <span class="hint">Finn bokstaven på tastaturet</span>
+          </button>
+        </div>
+
+        <details class="settings">
+          <summary>Innstillinger</summary>
+          <label><input type="checkbox" id="opt-sound" checked /> Lyd</label>
+          <label><input type="checkbox" id="opt-speech" checked /> Si bokstavene høyt</label>
+          <label class="letters">
+            Øv bare på disse bokstavene (tomt = hele alfabetet):
+            <input type="text" id="opt-letters" placeholder="f.eks. EMMA" maxlength="40" autocomplete="off" />
+          </label>
+          <p id="speech-note" class="note" hidden></p>
+        </details>
+
+        <p class="adult">
+          <strong>For voksne:</strong> Spillet låser tastaturet i fullskjerm.
+          Avslutt ved å holde inne <kbd>Ctrl</kbd> + <kbd>Shift</kbd> og skrive
+          <kbd>S</kbd> <kbd>L</kbd> <kbd>U</kbd> <kbd>T</kbd> <kbd>T</kbd>.
+        </p>
+        <p id="lock-note" class="note" hidden></p>
+        <p id="loading" class="loading">Laster …</p>
+      </div>
+    </div>
+
+    <!-- In-game HUD -->
+    <div id="hud" hidden>
+      <div id="trophies"></div>
+      <div id="stars"></div>
+    </div>
+    <div id="keyboard-hint" hidden></div>
+
+    <!-- Shown if fullscreen was lost (e.g. Esc held down) -->
+    <div id="paused" hidden>
+      Klikk for å gå tilbake til fullskjerm · Avslutt: hold <kbd>Ctrl</kbd>+<kbd>Shift</kbd> og skriv SLUTT
+    </div>
+
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>
