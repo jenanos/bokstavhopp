@@ -28,6 +28,21 @@ tasten (som har stor bokstav) til både den store og den lille bokstaven.
   - Feil tast er aldri «feil»: barnet ser og hører bokstaven det trykket på.
   - Etter to bom eller 7 sekunder vises et tastatur nederst der riktig tast blinker.
   - Under *Innstillinger* kan du begrense øvingen til noen bokstaver, f.eks. barnets navn.
+- **Bokstavbil** – kjør en liten gul bil nedover alfabet-veien med `←` og `→`.
+  - Bokstavene kommer i alfabetisk rekkefølge, A til Å. For hver bokstav står det to på
+    veien: én stor og én liten, én **rød** og én **blå**.
+  - Kjører du på en **rød** bokstav, går bilen fortere (flammer og vind). En **blå** bokstav
+    gjør at den går saktere. Kjører du forbi begge, holder bilen farten. Barnet bestemmer selv
+    hvor fort det skal gå. Fartsmåleren nede til venstre går fra snegle 🐌 til rakett 🚀.
+  - Bokstaven blir sagt høyt. Øverst fylles alfabetet opp i rødt og blått, med den formen
+    (stor eller liten) barnet kjørte på.
+  - På veien finnes også stjerner å plukke, hopperamper med salto (og stjerner i lufta),
+    regnbuer, sauer, hus, ballonger og kjærligheter på pinne.
+  - Etter Å kommer målet: konfetti, fanfare og en pokal 🏆. Så starter en ny runde fra A.
+  - `↑`: hopp. `Mellomrom` / `Enter` / `↓`: tut-tut, og alle bokstavene hopper.
+    Bokstavtaster tuter med bokstavens egen tone. Trykker barnet på bokstaven som kommer
+    nå, hopper og vinker den.
+  - Det går ikke an å krasje eller tape. Kjører man mot kanten, spretter bilen bare tilbake.
 
 ## Kjør
 
@@ -88,7 +103,8 @@ Hemmelig kombinasjon og tidsgrense kan endres i `src/lockdown.js` (`EXIT_WORD`).
 | `src/scene.js` | Kamera, lys, eng, skyer og blomster |
 | `src/particles.js` | Konfetti og stjerner |
 | `src/audio.js` | Syntetiske lydeffekter og norsk tale |
-| `src/modes/free.js`, `src/modes/practice.js` | De to spillmodusene |
+| `src/modes/free.js`, `src/modes/practice.js`, `src/modes/drive.js` | De tre spillmodusene |
+| `src/drive/` | Bokstavbil: veien og omgivelsene (`track.js`), bilen (`car.js`), eksos og fartsstriper (`fx.js`), skjermvisning (`hud.js`) |
 | `scripts/build-font.mjs` | Lager 3D-skriften fra `Andika-Bold.ttf` (`npm run font`) |
 
 ## Skrift

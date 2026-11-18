@@ -25,6 +25,11 @@
             <span class="label">Øving</span>
             <span class="hint">Finn bokstaven på tastaturet</span>
           </button>
+          <button class="mode-btn" data-mode="drive" disabled>
+            <span class="emoji">🚗</span>
+            <span class="label">Bokstavbil</span>
+            <span class="hint">Kjør gjennom alfabetet</span>
+          </button>
         </div>
 
         <details class="settings">
@@ -54,6 +59,7 @@
       <div id="stars"></div>
     </div>
     <div id="keyboard-hint" hidden></div>
+    <div id="drive-hud" hidden></div>
 
     <!-- Shown if fullscreen was lost (e.g. Esc held down) -->
     <div id="paused" hidden>

@@ -54,7 +54,7 @@ body.playing, body.playing * { cursor: none !important; }
   backdrop-filter: blur(6px);
   border-radius: 32px;
   padding: 28px 36px 22px;
-  max-width: 720px;
+  max-width: 780px;
   width: 100%;
   box-shadow: 0 20px 60px rgba(30, 60, 120, 0.25);
   text-align: center;
@@ -86,8 +86,8 @@ h1 span {
   border: none;
   border-radius: 26px;
   padding: 18px 26px;
-  min-width: 230px;
-  flex: 1 1 230px;
+  min-width: 180px;
+  flex: 1 1 180px;
   cursor: pointer;
   display: flex;
   flex-direction: column;
@@ -102,7 +102,7 @@ h1 span {
 .mode-btn:focus-visible { outline: 4px solid var(--accent); outline-offset: 4px; }
 .mode-btn:disabled { opacity: 0.5; cursor: progress; }
 .mode-btn .emoji { font-size: 54px; line-height: 1.1; }
-.mode-btn .label { font-size: 32px; }
+.mode-btn .label { font-size: 30px; }
 .mode-btn .hint { font-size: 15px; opacity: 0.65; }
 
 .settings {
@@ -227,3 +227,130 @@ kbd {
 }
 #paused[hidden] { display: none; }
 #paused kbd { color: var(--ink); }
+
+/* ---------- Bokstavbil HUD ---------- */
+#drive-hud {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+}
+#drive-hud[hidden], #drive-hud [hidden] { display: none !important; }
+
+#drive-hud .abc {
+  position: absolute;
+  top: 10px;
+  left: 12px;
+  right: 12px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 4px;
+}
+#drive-hud .abc span {
+  width: clamp(22px, 3vw, 44px);
+  height: clamp(26px, 3.4vw, 50px);
+  border-radius: 10px;
+  display: grid;
+  place-items: center;
+  font-size: clamp(15px, 2.2vw, 30px);
+  line-height: 1;
+  background: rgba(255, 255, 255, 0.5);
+  color: rgba(30, 42, 74, 0.3);
+  transition: background 0.2s, color 0.2s;
+}
+#drive-hud .abc span.fast,
+#drive-hud .abc span.slow {
+  color: #fff;
+  text-shadow: 0 2px 0 rgba(0, 0, 0, 0.2);
+  animation: pop-in 0.5s cubic-bezier(0.3, 1.8, 0.5, 1);
+}
+#drive-hud .abc span.fast { background: #ff2b3a; }
+#drive-hud .abc span.slow { background: #2f7bff; }
+#drive-hud .abc span.missed { background: rgba(255, 255, 255, 0.8); color: rgba(30, 42, 74, 0.7); }
+#drive-hud .abc span.current {
+  background: #fff;
+  color: var(--ink);
+  box-shadow: 0 0 0 3px #ffd60a, 0 0 16px 4px rgba(255, 214, 10, 0.8);
+  animation: pulse 0.9s ease-in-out infinite;
+}
+
+#drive-hud .speedo,
+#drive-hud .score {
+  position: absolute;
+  bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 16px;
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.75);
+  box-shadow: 0 8px 24px rgba(30, 60, 120, 0.2);
+  font-size: clamp(26px, 4vw, 44px);
+}
+#drive-hud .speedo { left: 16px; }
+#drive-hud .speedo.flash { animation: wobble 0.5s ease-out; }
+#drive-hud .bars {
+  display: flex;
+  align-items: flex-end;
+  gap: 5px;
+  height: 1.1em;
+}
+#drive-hud .bars i {
+  display: block;
+  width: 0.42em;
+  border-radius: 6px;
+  background: rgba(30, 42, 74, 0.13);
+  transition: background 0.25s;
+}
+#drive-hud .bars i.on { background: var(--c); box-shadow: 0 0 8px var(--c); }
+
+#drive-hud .score { right: 16px; }
+#drive-hud .score .laps:empty { display: none; }
+#drive-hud .stars { display: flex; align-items: center; gap: 6px; }
+#drive-hud .stars b { min-width: 1.2em; text-align: left; }
+#drive-hud .stars.flash { animation: wobble 0.4s ease-out; }
+@keyframes wobble {
+  0% { transform: scale(1); }
+  35% { transform: scale(1.25) rotate(-4deg); }
+  70% { transform: scale(0.95) rotate(3deg); }
+  100% { transform: scale(1); }
+}
+
+#drive-hud .lights {
+  position: absolute;
+  left: 50%;
+  top: 22%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 18px;
+  padding: 16px 22px;
+  border-radius: 30px;
+  background: #1e2a4a;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.3);
+}
+#drive-hud .lights i {
+  display: block;
+  width: clamp(48px, 8vw, 90px);
+  height: clamp(48px, 8vw, 90px);
+  border-radius: 50%;
+  background: #3a4566;
+  transition: background 0.1s, box-shadow 0.1s;
+}
+#drive-hud .lights i.lit { background: #ff3b3b; box-shadow: 0 0 30px 6px #ff3b3b; }
+#drive-hud .lights.go i { background: #3ee35a; box-shadow: 0 0 30px 6px #3ee35a; }
+
+#drive-hud .banner {
+  position: absolute;
+  left: 50%;
+  top: 34%;
+  transform: translate(-50%, -50%);
+  white-space: nowrap;
+  font-size: clamp(48px, 10vw, 120px);
+  color: #fff;
+  text-shadow: 0 6px 0 rgba(0, 0, 0, 0.2), 0 0 30px rgba(255, 214, 10, 0.9);
+  animation: banner-pop 0.7s cubic-bezier(0.3, 1.8, 0.5, 1);
+}
+@keyframes banner-pop {
+  0% { transform: translate(-50%, -50%) scale(0); }
+  100% { transform: translate(-50%, -50%) scale(1); }
+}

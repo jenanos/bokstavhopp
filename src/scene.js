@@ -25,6 +25,7 @@ export function createStage(canvas) {
   scene.environmentIntensity = 0.4;
 
   const camera = new THREE.PerspectiveCamera(42, 1, 0.1, 200);
+  const MEADOW_CAMERA = { fov: 42, far: 200, fogNear: 45, fogFar: 90 };
   const lookAt = new THREE.Vector3(0, 3.4, 0);
 
   // Lights
@@ -43,6 +44,10 @@ export function createStage(canvas) {
   sun.shadow.radius = 4;
   scene.add(sun);
 
+  // Everything that belongs to the meadow, so other views (the car road) can hide it.
+  const meadow = new THREE.Group();
+  scene.add(meadow);
+
   // Ground
   const ground = new THREE.Mesh(
     new THREE.CircleGeometry(90, 64),
@@ -50,7 +55,7 @@ export function createStage(canvas) {
   );
   ground.rotation.x = -Math.PI / 2;
   ground.receiveShadow = true;
-  scene.add(ground);
+  meadow.add(ground);
 
   // A soft lighter "stage" patch where the letters land
   const patch = new THREE.Mesh(
@@ -61,21 +66,27 @@ export function createStage(canvas) {
   patch.position.y = 0.01;
   patch.scale.set(1.5, 0.55, 1);
   patch.receiveShadow = true;
-  scene.add(patch);
+  meadow.add(patch);
 
-  addHills(scene);
+  addHills(meadow);
   const clouds = addClouds(scene);
-  const shelf = createShelf(scene);
-  const flowers = addFlowers(scene);
+  const shelf = createShelf(meadow);
+  const flowers = addFlowers(meadow);
 
   // Visible half-width at z = 0, updated on resize; used to keep letters on screen.
   const bounds = { halfWidth: 10 };
+  // 'meadow' = the letter stage; any other view hides the meadow and lets its mode drive the camera.
+  let view = 'meadow';
 
   function resize() {
     const w = window.innerWidth;
     const h = window.innerHeight;
     renderer.setSize(w, h, false);
     camera.aspect = w / h;
+    if (view !== 'meadow') {
+      camera.updateProjectionMatrix();
+      return;
+    }
     // Pull the camera back on narrow screens so there is always room for ~20 units across.
     const tanHalf = Math.tan(THREE.MathUtils.degToRad(camera.fov / 2));
     const neededWidth = 11;
@@ -103,7 +114,19 @@ export function createStage(canvas) {
     }
   }
 
-  return { renderer, scene, camera, bounds, update };
+  function setView(name) {
+    view = name;
+    meadow.visible = name === 'meadow';
+    if (name === 'meadow') {
+      camera.fov = MEADOW_CAMERA.fov;
+      camera.far = MEADOW_CAMERA.far;
+      scene.fog.near = MEADOW_CAMERA.fogNear;
+      scene.fog.far = MEADOW_CAMERA.fogFar;
+    }
+    resize();
+  }
+
+  return { renderer, scene, camera, bounds, update, setView };
 }
 
 /** A long fluffy cloud the capital letters stand on. Rebuilt to fit the screen width. */

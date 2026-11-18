@@ -114,6 +114,126 @@ export class Sound {
     this.#tone({ type: 'sine', from: 392, dur: 0.18, gain: 0.14 });
     this.#tone({ type: 'sine', from: 330, start: 0.16, dur: 0.24, gain: 0.14 });
   }
+
+  // ---------- Car sounds (Bokstavbil) ----------
+
+  /** A pitch glide over the whole duration (#tone only bends at the start). */
+  #slide({ type = 'triangle', from, to, start = 0, dur = 0.4, gain = 0.2 }) {
+    const t = this.ctx.currentTime + start;
+    const osc = this.ctx.createOscillator();
+    const g = this.ctx.createGain();
+    osc.type = type;
+    osc.frequency.setValueAtTime(from, t);
+    osc.frequency.exponentialRampToValueAtTime(to, t + dur);
+    g.gain.setValueAtTime(0.0001, t);
+    g.gain.exponentialRampToValueAtTime(gain, t + 0.02);
+    g.gain.setValueAtTime(gain, t + dur * 0.7);
+    g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+    osc.connect(g).connect(this.master);
+    osc.start(t);
+    osc.stop(t + dur + 0.05);
+  }
+
+  /** Red letter: a rising "vrooom!" */
+  speedUp() {
+    if (!this.ready) return;
+    this.#slide({ type: 'sawtooth', from: 110, to: 440, dur: 0.5, gain: 0.08 });
+    this.#slide({ type: 'triangle', from: 220, to: 880, dur: 0.45, gain: 0.2 });
+    this.#slide({ type: 'sine', from: 440, to: 1760, start: 0.05, dur: 0.4, gain: 0.08 });
+  }
+
+  /** Blue letter: a lazy "wah-wah". */
+  slowDown() {
+    if (!this.ready) return;
+    this.#slide({ type: 'triangle', from: 660, to: 330, dur: 0.3, gain: 0.2 });
+    this.#slide({ type: 'triangle', from: 495, to: 196, start: 0.28, dur: 0.45, gain: 0.2 });
+  }
+
+  /** Tut-tut! */
+  horn() {
+    if (!this.ready) return;
+    for (const s of [0, 0.2]) {
+      this.#tone({ type: 'square', from: 392, start: s, dur: 0.16, gain: 0.05, attack: 0.005 });
+      this.#tone({ type: 'triangle', from: 494, start: s, dur: 0.16, gain: 0.16, attack: 0.005 });
+    }
+  }
+
+  /** A short honk whose pitch belongs to the letter. */
+  hornNote(ch) {
+    if (!this.ready) return;
+    const f = this.noteFreq(charIndex(ch));
+    this.#tone({ type: 'square', from: f, dur: 0.2, gain: 0.05, attack: 0.005 });
+    this.#tone({ type: 'triangle', from: f * 1.5, dur: 0.2, gain: 0.12, attack: 0.005 });
+  }
+
+  coin() {
+    if (!this.ready) return;
+    this.#tone({ type: 'sine', from: 988, dur: 0.1, gain: 0.15 });
+    this.#tone({ type: 'sine', from: 1319, start: 0.07, dur: 0.3, gain: 0.15 });
+  }
+
+  wheee() {
+    if (!this.ready) return;
+    this.#slide({ type: 'sine', from: 300, to: 1400, dur: 0.5, gain: 0.16 });
+    this.#slide({ type: 'triangle', from: 1400, to: 500, start: 0.5, dur: 0.45, gain: 0.1 });
+  }
+
+  /** Countdown beep; the last one is higher and longer. */
+  beep(go = false) {
+    if (!this.ready) return;
+    const f = go ? 880 : 440;
+    this.#tone({ type: 'square', from: f, dur: go ? 0.6 : 0.22, gain: 0.06, attack: 0.005 });
+    this.#tone({ type: 'triangle', from: f, dur: go ? 0.6 : 0.22, gain: 0.14, attack: 0.005 });
+  }
+
+  /** Soft bump against the kerb. */
+  bump() {
+    if (!this.ready) return;
+    this.#tone({ type: 'sine', from: 200, to: 80, dur: 0.22, gain: 0.22 });
+  }
+
+  /** Soft "brum-brum" engine whose pitch follows the speed (0..1). */
+  engineStart() {
+    if (!this.ready || this.engine) return;
+    const ctx = this.ctx;
+    const osc = ctx.createOscillator();
+    osc.type = 'sawtooth';
+    osc.frequency.value = 50;
+    const filter = ctx.createBiquadFilter();
+    filter.type = 'lowpass';
+    filter.frequency.value = 380;
+    const g = ctx.createGain();
+    g.gain.value = 0;
+    g.gain.setTargetAtTime(0.045, ctx.currentTime, 0.3);
+    const lfo = ctx.createOscillator();
+    lfo.frequency.value = 9;
+    const lfoGain = ctx.createGain();
+    lfoGain.gain.value = 0.02;
+    lfo.connect(lfoGain).connect(g.gain);
+    osc.connect(filter).connect(g).connect(this.master);
+    osc.start();
+    lfo.start();
+    this.engine = { osc, lfo, g, filter };
+  }
+
+  engineSpeed(f) {
+    if (!this.engine) return;
+    const t = this.ctx.currentTime;
+    this.engine.osc.frequency.setTargetAtTime(45 + 70 * f, t, 0.2);
+    this.engine.lfo.frequency.setTargetAtTime(7 + 16 * f, t, 0.2);
+    this.engine.filter.frequency.setTargetAtTime(320 + 500 * f, t, 0.2);
+  }
+
+  engineStop() {
+    if (!this.engine) return;
+    const { osc, lfo, g } = this.engine;
+    const t = this.ctx.currentTime;
+    g.gain.cancelScheduledValues(t);
+    g.gain.setTargetAtTime(0, t, 0.08);
+    osc.stop(t + 0.5);
+    lfo.stop(t + 0.5);
+    this.engine = null;
+  }
 }
 
 export class Speech {

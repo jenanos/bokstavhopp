@@ -8,6 +8,7 @@ import { ALPHABET, DIGITS, classifyKey, parseLetterSet, lower } from './alphabet
 import { renderTitle, KeyboardHint, StarCounter } from './ui.js';
 import { FreeMode } from './modes/free.js';
 import { PracticeMode } from './modes/practice.js';
+import { DriveMode } from './modes/drive.js';
 import { KeyFilter } from './keyfilter.js';
 
 const $ = (id) => document.getElementById(id);
@@ -48,6 +49,7 @@ const stars = new StarCounter($('hud'), $('stars'), $('trophies'));
 const modes = {
   free: new FreeMode({ world, sound, speech }),
   practice: new PracticeMode({ world, sound, speech, hint, stars }),
+  drive: new DriveMode({ stage, world, sound, speech, hudEl: $('drive-hud') }),
 };
 let mode = null;
 

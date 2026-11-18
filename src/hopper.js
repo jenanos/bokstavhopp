@@ -107,13 +107,13 @@ function makeEyes(info) {
 
 /** One character mesh with eyes, inside a squash group pivoting at its feet. */
 class Glyph {
-  constructor(ch) {
+  constructor(ch, material) {
     const info = glyphGeometry(ch);
     this.info = info;
     this.root = new THREE.Group(); // positioned within the hopper
     this.squash = new THREE.Group(); // scaled for squash & stretch
     this.root.add(this.squash);
-    const mesh = new THREE.Mesh(info.geo, glyphMaterial(ch));
+    const mesh = new THREE.Mesh(info.geo, material ?? glyphMaterial(ch));
     mesh.castShadow = true;
     mesh.receiveShadow = true;
     this.squash.add(mesh);
@@ -182,7 +182,7 @@ export class Hopper {
     this.onPop = o.onPop;
 
     this.group = new THREE.Group();
-    this.glyphs = chars.map((c) => new Glyph(c));
+    this.glyphs = chars.map((c) => new Glyph(c, o.material)); // o.material overrides the per-letter colour
     const widths = this.glyphs.map((g) => g.info.width);
     const total = widths.reduce((a, b) => a + b, 0) + GLYPH_GAP * (widths.length - 1);
     let x = -total / 2;
